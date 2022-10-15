@@ -24,6 +24,7 @@ data class Server(val server: WireMockServer) {
 }
 
 class HttpStub(private val server: WireMockServer) {
+
    fun post(url: String, response: (HttpRequest) -> HttpResponse) {
       server.stubFor(
          WireMock.post(WireMock.urlEqualTo(url)).willReturn(
@@ -63,9 +64,16 @@ class HttpStub(private val server: WireMockServer) {
          )
       )
    }
+
+   /**
+    * Adds a callback for responses to this pipeline.
+    */
+   fun listener(fn: (HttpRequest) -> Unit) {
+      server.addMockServiceRequestListener { request, _ -> fn(HttpRequest(request.url)) }
+   }
 }
 
-data class HttpRequest(val uri: String)
+data class HttpRequest(val url: String)
 
 data class HttpResponse(
    val code: HttpStatusCode,
