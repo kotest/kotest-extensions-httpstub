@@ -9,23 +9,16 @@ import io.ktor.http.HttpStatusCode
 import kotlin.random.Random
 
 fun httpstub(configure: HttpStub.() -> Unit): Server {
-//   server.stubFor(
-//      WireMock.post(WireMock.urlEqualTo("")).willReturn(
-//         WireMock.ok().withHeader("Content-Type", "application/json").withBody(settings.toJson())
-//      )
-//   )
-
    val port = Random.nextInt(10000, 65000)
    val server = WireMockServer(WireMockConfiguration.wireMockConfig().port(port))
    server.start()
-
-   val http = HttpStub(server).configure()
+   HttpStub(server).configure()
    return Server(server)
 }
 
 data class Server(val server: WireMockServer) {
    val port = server.port()
-   val baseUrl = server.baseUrl()
+   val baseUrl: String = server.baseUrl()
    val isHttp = server.isHttpEnabled
    val isHttps = server.isHttpsEnabled
 }
@@ -76,7 +69,7 @@ data class HttpRequest(val uri: String)
 
 data class HttpResponse(
    val code: HttpStatusCode,
-   val body: Any? = null,
+   val body: String? = null,
    val headers: Map<String, String> = emptyMap()
 )
 
