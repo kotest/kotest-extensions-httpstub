@@ -3,6 +3,8 @@ package io.kotest.extensions.httpstub
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlin.random.Random
 
@@ -76,3 +78,6 @@ data class HttpResponse(
 )
 
 fun HttpResponse.withHeader(name: String, value: String) = copy(headers = headers + (name to value))
+
+fun HttpResponse.withContentType(contentType: ContentType) =
+   copy(headers = headers + (HttpHeaders.ContentType to contentType.toString()))
