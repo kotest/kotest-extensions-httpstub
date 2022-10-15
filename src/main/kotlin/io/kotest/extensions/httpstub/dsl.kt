@@ -17,13 +17,28 @@ fun httpstub(configure: HttpStub.() -> Unit): Server {
 }
 
 data class Server(val server: WireMockServer) {
+
    val port = server.port()
    val baseUrl: String = server.baseUrl()
    val isHttp = server.isHttpEnabled
    val isHttps = server.isHttpsEnabled
+
+   private val invokedEndpoints = mutableListOf<String>()
+
+   init {
+      server.addMockServiceRequestListener { request, _ ->
+         invokedEndpoints.add(request.url)
+      }
+   }
+
+   /**
+    * Returns a list of the endpoints invoked, eg "/foo", "/bar"
+    */
+   fun invokedEndpoints(): List<String> = invokedEndpoints
 }
 
 class HttpStub(private val server: WireMockServer) {
+
 
    fun post(url: String, response: (HttpRequest) -> HttpResponse) {
       server.stubFor(
