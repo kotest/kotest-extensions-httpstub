@@ -68,5 +68,11 @@ class HttpStub(private val server: WireMockServer) {
 }
 
 data class HttpRequest(val uri: String)
-data class HttpResponse(val code: HttpStatusCode, val body: Any? = null)
 
+data class HttpResponse(
+   val code: HttpStatusCode,
+   val body: Any? = null,
+   val headers: Map<String, String> = emptyMap()
+)
+
+fun HttpResponse.withHeader(name: String, value: String) = copy(headers = headers + (name to value))

@@ -11,7 +11,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.http.HttpStatusCode
 
-class DslTest : FunSpec() {
+class MethodTest : FunSpec() {
    init {
 
       val client = HttpClient(Apache)
