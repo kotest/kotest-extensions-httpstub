@@ -25,6 +25,9 @@ fun httpstub(configure: HttpStub.() -> Unit): Server {
 
 data class Server(val server: WireMockServer) {
    val port = server.port()
+   val baseUrl = server.baseUrl()
+   val isHttp = server.isHttpEnabled
+   val isHttps = server.isHttpsEnabled
 }
 
 class HttpStub(private val server: WireMockServer) {
