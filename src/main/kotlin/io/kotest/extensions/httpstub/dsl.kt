@@ -62,10 +62,14 @@ class HttpStubber(private val server: WireMockServer) {
          fn(request.toHttpRequest())
       }
    }
-}
 
-fun okJson(body: String): HttpResponse = HttpResponse(HttpStatusCode.OK, body)
-   .withContentType(ContentType.Application.Json)
+   fun okJson(body: String): HttpResponse = HttpResponse(HttpStatusCode.OK, body)
+      .withContentType(ContentType.Application.Json)
+
+   fun ok(): HttpResponse = HttpResponse(HttpStatusCode.OK)
+
+   fun ok(body: String): HttpResponse = HttpResponse(HttpStatusCode.OK, body)
+}
 
 data class HttpRequest(val url: String, val headers: Map<String, List<String>>)
 
