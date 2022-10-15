@@ -1,5 +1,6 @@
 package io.kotest.extensions.httpstub
 
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
@@ -15,9 +16,12 @@ class MethodTest : FunSpec() {
    init {
 
       val client = HttpClient(Apache)
+      val server = install(HttpStub) {
+         resetMappings = Reset.TEST
+      }
 
       test("post request") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
             }
@@ -27,7 +31,7 @@ class MethodTest : FunSpec() {
       }
 
       test("get request") {
-         val server = httpstub {
+         server.mappings {
             get("/foo") {
                HttpResponse(HttpStatusCode.Created, "hello")
             }
@@ -37,7 +41,7 @@ class MethodTest : FunSpec() {
       }
 
       test("patch request") {
-         val server = httpstub {
+         server.mappings {
             patch("/foo") {
                HttpResponse(HttpStatusCode.PartialContent, "hello")
             }
@@ -47,7 +51,7 @@ class MethodTest : FunSpec() {
       }
 
       test("put request") {
-         val server = httpstub {
+         server.mappings {
             put("/foo") {
                HttpResponse(HttpStatusCode.ResetContent, "hello")
             }
@@ -57,7 +61,7 @@ class MethodTest : FunSpec() {
       }
 
       test("delete request") {
-         val server = httpstub {
+         server.mappings {
             delete("/foo") {
                HttpResponse(HttpStatusCode.NoContent, "hello")
             }

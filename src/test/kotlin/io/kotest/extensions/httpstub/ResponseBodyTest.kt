@@ -1,5 +1,6 @@
 package io.kotest.extensions.httpstub
 
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
@@ -15,9 +16,12 @@ class ResponseBodyTest : FunSpec() {
    init {
 
       val client = HttpClient(Apache)
+      val server = install(HttpStub) {
+         resetMappings = Reset.TEST
+      }
 
       test("with response body") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
             }
@@ -28,7 +32,7 @@ class ResponseBodyTest : FunSpec() {
       }
 
       test("with response body json") {
-         val server = httpstub {
+         server.mappings {
             get("/foo") {
                HttpResponse(HttpStatusCode.OK, """{"foo":"bar"}""")
             }
@@ -39,7 +43,7 @@ class ResponseBodyTest : FunSpec() {
       }
 
       test("with json helper") {
-         val server = httpstub {
+         server.mappings {
             get("/foo") {
                okJson("""{"foo":"bar"}""")
             }

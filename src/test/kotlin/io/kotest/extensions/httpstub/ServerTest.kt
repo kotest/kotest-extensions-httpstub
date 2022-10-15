@@ -1,5 +1,6 @@
 package io.kotest.extensions.httpstub
 
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
@@ -13,28 +14,36 @@ class ServerTest : FunSpec() {
 
       val client = HttpClient(Apache)
 
+      val server = install(HttpStub) {
+         port = 24453
+         resetRequests = Reset.TEST
+      }
+
+      server.mappings(reuse(1, 2))
+
       test("support fixed port") {
-         val server = httpstub(port = 43523) {
+         server.mappings {
             post("/foo") {
-               HttpResponse(HttpStatusCode.ExpectationFailed, "hello")
+               HttpResponse(HttpStatusCode.OK, "hello")
             }
          }
-         val resp = client.post("http://localhost:43523/foo")
-         resp.status shouldBe HttpStatusCode.ExpectationFailed
+         val resp = client.post("http://localhost:24453/foo")
+         resp.status shouldBe HttpStatusCode.OK
       }
 
       test("server should list all invoked endpoints") {
-         val server = httpstub {
-            post("/foo") {
-               HttpResponse(HttpStatusCode.OK, "hello")
-            }
-            delete("/bar") {
-               HttpResponse(HttpStatusCode.OK, "hello")
-            }
-         }
-         client.post("http://localhost:${server.port}/foo")
-         client.delete("http://localhost:${server.port}/bar")
+         client.post("http://localhost:24453/foo")
+         client.delete("http://localhost:24453/bar")
          server.invokedEndpoints() shouldBe listOf("/foo", "/bar")
       }
+   }
+}
+
+fun reuse(source: Long, target: Long) = mappings {
+   post("/internal/v1/$source/$target") {
+      okJson("{}")
+   }
+   get("/internal/v2/bar") {
+      okJson("{}")
    }
 }

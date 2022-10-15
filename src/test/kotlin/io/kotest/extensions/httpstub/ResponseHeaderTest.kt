@@ -1,5 +1,6 @@
 package io.kotest.extensions.httpstub
 
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
@@ -13,9 +14,12 @@ class ResponseHeaderTest : FunSpec() {
    init {
 
       val client = HttpClient(Apache)
+      val server = install(HttpStub) {
+         resetMappings = Reset.TEST
+      }
 
       test("with response header") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
                   .withHeader("myheader", "headerface")
@@ -27,7 +31,7 @@ class ResponseHeaderTest : FunSpec() {
       }
 
       test("with multiple headers") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
                   .withHeader("myheader1", "headerface")
@@ -41,7 +45,7 @@ class ResponseHeaderTest : FunSpec() {
       }
 
       test("with duplicated header") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
                   .withHeader("myheader", "headerface")
@@ -54,7 +58,7 @@ class ResponseHeaderTest : FunSpec() {
       }
 
       test("with explicit content type support") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
                   .withContentType(ContentType.Application.Json)
@@ -66,7 +70,7 @@ class ResponseHeaderTest : FunSpec() {
       }
 
       test("explicit content type support should overwrite previous header") {
-         val server = httpstub {
+         server.mappings {
             post("/foo") {
                HttpResponse(HttpStatusCode.OK, "hello")
                   .withHeader(HttpHeaders.ContentType, "foo")

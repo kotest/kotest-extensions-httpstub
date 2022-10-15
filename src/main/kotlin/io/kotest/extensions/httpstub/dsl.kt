@@ -2,82 +2,54 @@ package io.kotest.extensions.httpstub
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import kotlin.random.Random
 
 const val DEFAULT_HOST = "0.0.0.0"
 
-fun httpstub(port: Int? = null, host: String? = null, configure: HttpStub.() -> Unit): Server {
-   val p = port ?: Random.nextInt(10000, 65000)
-   val h = host ?: DEFAULT_HOST
-   val server = WireMockServer(WireMockConfiguration.wireMockConfig().port(p).bindAddress(h))
-   server.start()
-   HttpStub(server).configure()
-   return Server(server)
+fun mappings(configure: HttpStubber.() -> Unit): HttpStubber.() -> Unit {
+   return configure
 }
 
-data class Server(val server: WireMockServer) {
+class HttpStubber(private val server: WireMockServer) {
 
-   val port = server.port()
-   val baseUrl: String = server.baseUrl()
-   val isHttp = server.isHttpEnabled
-   val isHttps = server.isHttpsEnabled
-
-   private val invokedEndpoints = mutableListOf<String>()
-
-   init {
-      server.addMockServiceRequestListener { request, _ ->
-         invokedEndpoints.add(request.url)
-      }
-   }
-
-   /**
-    * Returns a list of the endpoints invoked, eg "/foo", "/bar"
-    */
-   fun invokedEndpoints(): List<String> = invokedEndpoints
-}
-
-class HttpStub(private val server: WireMockServer) {
-
-   fun post(url: String, response: (HttpRequest) -> HttpResponse) {
+   fun post(url: String, fn: () -> HttpResponse) {
       server.stubFor(
          WireMock.post(WireMock.urlEqualTo(url)).willReturn(
-            response(HttpRequest(url)).toReturnBuilder()
+            fn().toReturnBuilder()
          )
       )
    }
 
-   fun get(url: String, response: (HttpRequest) -> HttpResponse) {
+   fun get(url: String, fn: () -> HttpResponse) {
       server.stubFor(
          WireMock.get(WireMock.urlEqualTo(url)).willReturn(
-            response(HttpRequest(url)).toReturnBuilder()
+            fn().toReturnBuilder()
          )
       )
    }
 
-   fun patch(url: String, response: (HttpRequest) -> HttpResponse) {
+   fun patch(url: String, fn: () -> HttpResponse) {
       server.stubFor(
          WireMock.patch(WireMock.urlEqualTo(url)).willReturn(
-            response(HttpRequest(url)).toReturnBuilder()
+            fn().toReturnBuilder()
          )
       )
    }
 
-   fun put(url: String, response: (HttpRequest) -> HttpResponse) {
+   fun put(url: String, fn: () -> HttpResponse) {
       server.stubFor(
          WireMock.put(WireMock.urlEqualTo(url)).willReturn(
-            response(HttpRequest(url)).toReturnBuilder()
+            fn().toReturnBuilder()
          )
       )
    }
 
-   fun delete(url: String, response: (HttpRequest) -> HttpResponse) {
+   fun delete(url: String, fn: () -> HttpResponse) {
       server.stubFor(
          WireMock.delete(WireMock.urlEqualTo(url)).willReturn(
-            response(HttpRequest(url)).toReturnBuilder()
+            fn().toReturnBuilder()
          )
       )
    }
@@ -86,14 +58,16 @@ class HttpStub(private val server: WireMockServer) {
     * Adds a callback for responses to this pipeline.
     */
    fun listener(fn: (HttpRequest) -> Unit) {
-      server.addMockServiceRequestListener { request, _ -> fn(HttpRequest(request.url)) }
+      server.addMockServiceRequestListener { request, _ ->
+         fn(request.toHttpRequest())
+      }
    }
 }
 
 fun okJson(body: String): HttpResponse = HttpResponse(HttpStatusCode.OK, body)
    .withContentType(ContentType.Application.Json)
 
-data class HttpRequest(val url: String)
+data class HttpRequest(val url: String, val headers: Map<String, List<String>>)
 
 data class HttpResponse(
    val code: HttpStatusCode,
