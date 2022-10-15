@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import io.kotest.core.extensions.MountableExtension
 import io.kotest.core.listeners.AfterSpecListener
-import io.kotest.core.listeners.BeforeSpecListener
 import io.kotest.core.listeners.BeforeTestListener
 import io.kotest.core.spec.Spec
 import io.kotest.core.test.TestCase
@@ -23,7 +22,6 @@ enum class Reset {
 
 object HttpStub : MountableExtension<HttpStubConfig, HttpStubServer>,
    BeforeTestListener,
-   BeforeSpecListener,
    AfterSpecListener {
 
    private var server: WireMockServer? = null

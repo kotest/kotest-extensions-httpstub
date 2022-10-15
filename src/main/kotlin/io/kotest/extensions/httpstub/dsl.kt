@@ -3,7 +3,6 @@ package io.kotest.extensions.httpstub
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 
 const val DEFAULT_HOST = "0.0.0.0"
@@ -71,21 +70,3 @@ class HttpStubber(private val server: WireMockServer) {
    fun okTextPlain(body: String): HttpResponse =
       HttpResponse(HttpStatusCode.OK, body).withContentType(ContentType.Text.Plain)
 }
-
-data class HttpRequest(
-   val url: String,
-   val absoluteUrl: String,
-   val headers: Map<String, List<String>>,
-   val body: ByteArray,
-)
-
-data class HttpResponse(
-   val code: HttpStatusCode,
-   val body: String? = null,
-   val headers: Map<String, String> = emptyMap()
-)
-
-fun HttpResponse.withHeader(name: String, value: String) = copy(headers = headers + (name to value))
-
-fun HttpResponse.withContentType(contentType: ContentType) =
-   copy(headers = headers + (HttpHeaders.ContentType to contentType.toString()))

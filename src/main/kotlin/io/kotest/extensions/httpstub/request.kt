@@ -10,3 +10,10 @@ fun Request.toHttpRequest(): HttpRequest {
       body = this.body,
    )
 }
+
+data class HttpRequest(
+   val url: String,
+   val absoluteUrl: String,
+   val headers: Map<String, List<String>>,
+   val body: ByteArray,
+)
