@@ -25,6 +25,7 @@ data class HttpStubServer(val server: WireMockServer) {
     * Returns a list of the endpoints invoked, eg "/foo", "/bar"
     */
    fun invokedEndpoints(): List<String> = requests.map { it.url }
+   fun invokedUrls(): List<String> = requests.map { it.absoluteUrl }
 
    fun checkForUnmatchedRequests() = server.checkForUnmatchedRequests()
 

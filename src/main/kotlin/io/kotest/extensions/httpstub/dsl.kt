@@ -72,7 +72,12 @@ class HttpStubber(private val server: WireMockServer) {
       HttpResponse(HttpStatusCode.OK, body).withContentType(ContentType.Text.Plain)
 }
 
-data class HttpRequest(val url: String, val headers: Map<String, List<String>>)
+data class HttpRequest(
+   val url: String,
+   val absoluteUrl: String,
+   val headers: Map<String, List<String>>,
+   val body: ByteArray,
+)
 
 data class HttpResponse(
    val code: HttpStatusCode,
