@@ -13,6 +13,16 @@ class ServerTest : FunSpec() {
 
       val client = HttpClient(Apache)
 
+      test("support fixed port") {
+         val server = httpstub(port = 43523) {
+            post("/foo") {
+               HttpResponse(HttpStatusCode.ExpectationFailed, "hello")
+            }
+         }
+         val resp = client.post("http://localhost:43523/foo")
+         resp.status shouldBe HttpStatusCode.ExpectationFailed
+      }
+
       test("server should list all invoked endpoints") {
          val server = httpstub {
             post("/foo") {

@@ -8,9 +8,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlin.random.Random
 
-fun httpstub(configure: HttpStub.() -> Unit): Server {
-   val port = Random.nextInt(10000, 65000)
-   val server = WireMockServer(WireMockConfiguration.wireMockConfig().port(port))
+const val DEFAULT_HOST = "0.0.0.0"
+
+fun httpstub(port: Int? = null, host: String? = null, configure: HttpStub.() -> Unit): Server {
+   val p = port ?: Random.nextInt(10000, 65000)
+   val h = host ?: DEFAULT_HOST
+   val server = WireMockServer(WireMockConfiguration.wireMockConfig().port(p).bindAddress(h))
    server.start()
    HttpStub(server).configure()
    return Server(server)
