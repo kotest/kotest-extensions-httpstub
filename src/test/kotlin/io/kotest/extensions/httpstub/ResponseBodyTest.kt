@@ -7,7 +7,9 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 
 class ResponseBodyTest : FunSpec() {
    init {
@@ -34,6 +36,18 @@ class ResponseBodyTest : FunSpec() {
          val resp = client.get("http://localhost:${server.port}/foo")
          resp.status shouldBe HttpStatusCode.OK
          resp.bodyAsText() shouldBe """{"foo":"bar"}"""
+      }
+
+      test("with json helper") {
+         val server = httpstub {
+            get("/foo") {
+               okJson("""{"foo":"bar"}""")
+            }
+         }
+         val resp = client.get("http://localhost:${server.port}/foo")
+         resp.status shouldBe HttpStatusCode.OK
+         resp.bodyAsText() shouldBe """{"foo":"bar"}"""
+         resp.contentType() shouldBe ContentType.Application.Json
       }
    }
 }

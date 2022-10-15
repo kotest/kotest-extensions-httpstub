@@ -90,7 +90,8 @@ class HttpStub(private val server: WireMockServer) {
    }
 }
 
-fun json(body: String): HttpResponse = HttpResponse(HttpStatusCode.OK, body)
+fun okJson(body: String): HttpResponse = HttpResponse(HttpStatusCode.OK, body)
+   .withContentType(ContentType.Application.Json)
 
 data class HttpRequest(val url: String)
 
