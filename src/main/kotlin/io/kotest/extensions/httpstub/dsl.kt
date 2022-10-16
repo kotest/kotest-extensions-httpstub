@@ -31,38 +31,73 @@ class HttpStubber(private val server: WireMockServer) {
       server.stubFor(builder.willReturn(resp.toReturnBuilder()))
    }
 
+   fun get(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.get(WireMock.urlMatching(url.pattern))
+      stub(builder, fn)
+   }
+
    fun get(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.get(WireMock.urlMatching(url))
+      val builder = WireMock.get(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun post(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.post(WireMock.urlMatching(url.pattern))
       stub(builder, fn)
    }
 
    fun post(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.post(WireMock.urlMatching(url))
+      val builder = WireMock.post(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun patch(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.patch(WireMock.urlMatching(url.pattern))
       stub(builder, fn)
    }
 
    fun patch(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.patch(WireMock.urlMatching(url))
+      val builder = WireMock.patch(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun head(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.head(WireMock.urlMatching(url.pattern))
       stub(builder, fn)
    }
 
    fun head(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.head(WireMock.urlMatching(url))
+      val builder = WireMock.head(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun options(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.options(WireMock.urlMatching(url.pattern))
       stub(builder, fn)
    }
 
    fun options(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.options(WireMock.urlMatching(url))
+      val builder = WireMock.options(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun put(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.put(WireMock.urlMatching(url.pattern))
       stub(builder, fn)
    }
 
    fun put(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.put(WireMock.urlMatching(url))
+      val builder = WireMock.put(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun delete(url: Regex, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.delete(WireMock.urlMatching(url.pattern))
       stub(builder, fn)
    }
 
    fun delete(url: String, fn: RequestStubber.() -> HttpResponse) {
-      val builder = WireMock.delete(WireMock.urlMatching(url))
+      val builder = WireMock.delete(WireMock.urlEqualTo(url))
       stub(builder, fn)
    }
 
