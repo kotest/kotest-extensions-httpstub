@@ -36,6 +36,21 @@ class ServerTest : FunSpec() {
          client.delete("http://localhost:24453/bar")
          server.invokedEndpoints() shouldBe listOf("/foo", "/bar")
       }
+
+      test ("server should list all invoked urls") {
+         client.post("http://localhost:24453/foo")
+         client.delete("http://localhost:24453/bar")
+         server.invokedUrls() shouldBe listOf("http://localhost:24453/foo", "http://localhost:24453/bar")
+      }
+
+      test("started and stopped") {
+         server.started() shouldBe true
+         server.stopped() shouldBe false
+      }
+
+      test("isHttp") {
+         server.isHttp shouldBe true
+      }
    }
 }
 

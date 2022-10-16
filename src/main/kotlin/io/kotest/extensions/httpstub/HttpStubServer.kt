@@ -19,22 +19,37 @@ data class HttpStubServer(val server: WireMockServer) {
    }
 
    /**
-    * Returns an absolute url for the given [endpoint].
+    * Resolves an absolute url for the given [endpoint].
     *
     * @param endpoint the endpoint path, eg /users
     * @return the absolute url, eg http://localhost:4524/users
     */
-   fun url(endpoint: String) = server.url(endpoint)
+   fun url(endpoint: String): String = server.url(endpoint)
 
+   /**
+    * @return true if the server is started and running
+    */
    fun started() = server.isRunning
+
+   /**
+    * @return true if the server is not running.
+    */
    fun stopped() = !server.isRunning
 
    /**
     * Returns a list of the endpoints invoked, eg "/foo", "/bar"
     */
    fun invokedEndpoints(): List<String> = requests.map { it.url }
+
+   /**
+    * Returns a list of the absolute urls invoked, eg "http://localhost:1234/foo", "http://localhost:1234/bar"
+    */
    fun invokedUrls(): List<String> = requests.map { it.absoluteUrl }
 
+   /**
+    * A Kotest matcher that will fail a test if any requests were made which
+    * were unmatched.
+    */
    fun shouldNotHaveUnmatchedRequests() = server.checkForUnmatchedRequests()
 
    fun clearRequests() {
