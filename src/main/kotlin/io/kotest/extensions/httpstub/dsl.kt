@@ -74,4 +74,6 @@ class HttpStubber(private val server: WireMockServer) {
       HttpResponse(HttpStatusCode.OK, body).withContentType(ContentType.Text.Plain)
 
    fun internalServerError() = HttpResponse(HttpStatusCode.InternalServerError)
+
+   fun badRequest() = HttpResponse(HttpStatusCode.BadRequest)
 }
