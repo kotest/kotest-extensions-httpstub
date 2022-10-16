@@ -1,7 +1,9 @@
 package io.kotest.extensions.httpstub
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.matching.EqualToPattern
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 
@@ -11,46 +13,47 @@ fun mappings(configure: HttpStubber.() -> Unit): HttpStubber.() -> Unit {
    return configure
 }
 
+class RequestStubber {
+
+   val headers = mutableMapOf<String, String>()
+
+   fun header(name: String, value: String) {
+      headers[name] = value
+   }
+}
+
 class HttpStubber(private val server: WireMockServer) {
 
-   fun post(url: String, fn: () -> HttpResponse) {
-      server.stubFor(
-         WireMock.post(WireMock.urlEqualTo(url)).willReturn(
-            fn().toReturnBuilder()
-         )
-      )
+   private fun stub(builder: MappingBuilder, fn: RequestStubber.() -> HttpResponse) {
+      val rs = RequestStubber()
+      val resp = rs.fn()
+      rs.headers.forEach { (name, value) -> builder.withHeader(name, EqualToPattern(value)) }
+      server.stubFor(builder.willReturn(resp.toReturnBuilder()))
    }
 
-   fun get(url: String, fn: () -> HttpResponse) {
-      server.stubFor(
-         WireMock.get(WireMock.urlEqualTo(url)).willReturn(
-            fn().toReturnBuilder()
-         )
-      )
+   fun get(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.get(WireMock.urlEqualTo(url))
+      stub(builder, fn)
    }
 
-   fun patch(url: String, fn: () -> HttpResponse) {
-      server.stubFor(
-         WireMock.patch(WireMock.urlEqualTo(url)).willReturn(
-            fn().toReturnBuilder()
-         )
-      )
+   fun post(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.post(WireMock.urlEqualTo(url))
+      stub(builder, fn)
    }
 
-   fun put(url: String, fn: () -> HttpResponse) {
-      server.stubFor(
-         WireMock.put(WireMock.urlEqualTo(url)).willReturn(
-            fn().toReturnBuilder()
-         )
-      )
+   fun patch(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.patch(WireMock.urlEqualTo(url))
+      stub(builder, fn)
    }
 
-   fun delete(url: String, fn: () -> HttpResponse) {
-      server.stubFor(
-         WireMock.delete(WireMock.urlEqualTo(url)).willReturn(
-            fn().toReturnBuilder()
-         )
-      )
+   fun put(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.put(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun delete(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.delete(WireMock.urlEqualTo(url))
+      stub(builder, fn)
    }
 
    /**
