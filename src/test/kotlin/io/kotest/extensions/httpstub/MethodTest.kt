@@ -7,6 +7,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.head
+import io.ktor.client.request.options
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.put
@@ -48,6 +50,26 @@ class MethodTest : FunSpec() {
          }
          val resp = client.patch("http://localhost:${server.port}/foo")
          resp.status shouldBe HttpStatusCode.PartialContent
+      }
+
+      test("options request") {
+         server.mappings {
+            options("/foo") {
+               HttpResponse(HttpStatusCode.Conflict, "hello")
+            }
+         }
+         val resp = client.options("http://localhost:${server.port}/foo")
+         resp.status shouldBe HttpStatusCode.Conflict
+      }
+
+      test("head request") {
+         server.mappings {
+            head("/foo") {
+               HttpResponse(HttpStatusCode.MultiStatus, "hello")
+            }
+         }
+         val resp = client.head("http://localhost:${server.port}/foo")
+         resp.status shouldBe HttpStatusCode.MultiStatus
       }
 
       test("put request") {

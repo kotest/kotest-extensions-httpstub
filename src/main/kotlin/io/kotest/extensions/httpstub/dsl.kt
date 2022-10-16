@@ -46,6 +46,16 @@ class HttpStubber(private val server: WireMockServer) {
       stub(builder, fn)
    }
 
+   fun head(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.head(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
+   fun options(url: String, fn: RequestStubber.() -> HttpResponse) {
+      val builder = WireMock.options(WireMock.urlEqualTo(url))
+      stub(builder, fn)
+   }
+
    fun put(url: String, fn: RequestStubber.() -> HttpResponse) {
       val builder = WireMock.put(WireMock.urlEqualTo(url))
       stub(builder, fn)
