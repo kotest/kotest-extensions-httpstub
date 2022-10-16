@@ -59,4 +59,9 @@ data class HttpStubServer(val server: WireMockServer) {
    fun mappings(configure: HttpStubber.() -> Unit) {
       HttpStubber(server).configure()
    }
+
+   fun mappings(vararg configures: HttpStubber.() -> Unit) {
+      val stubber = HttpStubber(server)
+      configures.forEach { it.invoke(stubber) }
+   }
 }
