@@ -1,6 +1,7 @@
 package io.kotest.extensions.httpstub
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.common.FatalStartupException
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import io.kotest.core.extensions.MountableExtension
 import io.kotest.core.listeners.AfterSpecListener
@@ -30,11 +31,20 @@ object HttpStub : MountableExtension<HttpStubConfig, HttpStubServer>,
 
    override fun mount(configure: HttpStubConfig.() -> Unit): HttpStubServer {
       config.configure()
-      val p = config.port ?: Random.nextInt(10000, 65000)
-      val s = WireMockServer(WireMockConfiguration.wireMockConfig().port(p).bindAddress(config.host))
-      s.start()
-      server = s
-      return HttpStubServer(s).also { this.stub = it }
+      // try 3 times to find a port if random
+      server = tryStart(3)
+      return HttpStubServer(server!!).also { this.stub = it }
+   }
+
+   private fun tryStart(attempts: Int): WireMockServer {
+      return try {
+         val p = config.port ?: Random.nextInt(10000, 65000)
+         val s = WireMockServer(WireMockConfiguration.wireMockConfig().port(p).bindAddress(config.host))
+         s.start()
+         s
+      } catch (e: FatalStartupException) {
+         if (attempts > 0) tryStart(attempts - 1) else throw e
+      }
    }
 
    override suspend fun beforeTest(testCase: TestCase) {

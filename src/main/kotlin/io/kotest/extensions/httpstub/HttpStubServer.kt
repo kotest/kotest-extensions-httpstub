@@ -18,6 +18,14 @@ data class HttpStubServer(val server: WireMockServer) {
       }
    }
 
+   /**
+    * Returns an absolute url for the given [endpoint].
+    *
+    * @param endpoint the endpoint path, eg /users
+    * @return the absolute url, eg http://localhost:4524/users
+    */
+   fun url(endpoint: String) = server.url(endpoint)
+
    fun started() = server.isRunning
    fun stopped() = !server.isRunning
 

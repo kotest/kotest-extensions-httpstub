@@ -26,7 +26,7 @@ class ResponseBodyTest : FunSpec() {
                HttpResponse(HttpStatusCode.OK, "hello")
             }
          }
-         val resp = client.post("http://localhost:${server.port}/foo")
+         val resp = client.post(server.url("/foo"))
          resp.status shouldBe HttpStatusCode.OK
          resp.bodyAsText() shouldBe "hello"
       }
@@ -37,7 +37,7 @@ class ResponseBodyTest : FunSpec() {
                HttpResponse(HttpStatusCode.OK, """{"foo":"bar"}""")
             }
          }
-         val resp = client.get("http://localhost:${server.port}/foo")
+         val resp = client.get(server.url("/foo"))
          resp.status shouldBe HttpStatusCode.OK
          resp.bodyAsText() shouldBe """{"foo":"bar"}"""
       }
@@ -48,7 +48,7 @@ class ResponseBodyTest : FunSpec() {
                okJson("""{"foo":"bar"}""")
             }
          }
-         val resp = client.get("http://localhost:${server.port}/foo")
+         val resp = client.get(server.url("/foo"))
          resp.status shouldBe HttpStatusCode.OK
          resp.bodyAsText() shouldBe """{"foo":"bar"}"""
          resp.contentType() shouldBe ContentType.Application.Json

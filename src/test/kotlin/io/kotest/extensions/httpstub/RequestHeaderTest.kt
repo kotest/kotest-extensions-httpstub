@@ -7,7 +7,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 
 class RequestHeaderTest : FunSpec() {
@@ -23,15 +22,15 @@ class RequestHeaderTest : FunSpec() {
                ok()
             }
          }
-         val resp1 = client.post("http://localhost:${server.port}/foo")
+         val resp1 = client.post(server.url("/foo"))
          resp1.status shouldBe HttpStatusCode.NotFound
 
-         val resp2 = client.post("http://localhost:${server.port}/foo") {
+         val resp2 = client.post(server.url("/foo")) {
             header("Accept", "foo")
          }
          resp2.status shouldBe HttpStatusCode.OK
 
-         val resp3 = client.post("http://localhost:${server.port}/foo") {
+         val resp3 = client.post(server.url("/foo")) {
             header("Accept", "asdsd")
          }
          resp3.status shouldBe HttpStatusCode.NotFound
@@ -45,15 +44,15 @@ class RequestHeaderTest : FunSpec() {
                ok()
             }
          }
-         val resp1 = client.post("http://localhost:${server.port}/foo")
+         val resp1 = client.post(server.url("/foo"))
          resp1.status shouldBe HttpStatusCode.NotFound
 
-         val resp2 = client.post("http://localhost:${server.port}/foo") {
+         val resp2 = client.post(server.url("/foo")) {
             header("header1", "foo")
          }
          resp2.status shouldBe HttpStatusCode.NotFound
 
-         val resp3 = client.post("http://localhost:${server.port}/foo") {
+         val resp3 = client.post(server.url("/foo")) {
             header("header1", "foo")
             header("header2", "bar")
          }
