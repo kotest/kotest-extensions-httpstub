@@ -3,6 +3,8 @@ package io.kotest.extensions.httpstub
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.matching.EqualToPattern
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -16,9 +18,13 @@ fun mappings(configure: HttpStubber.() -> Unit): HttpStubber.() -> Unit {
 class RequestStubber {
 
    val headers = mutableMapOf<String, String>()
+   var requestBody: String? = null
 
    fun header(name: String, value: String) {
       headers[name] = value
+   }
+   fun body(json: String) {
+      requestBody = json
    }
 }
 
@@ -28,6 +34,9 @@ class HttpStubber(private val server: WireMockServer) {
       val rs = RequestStubber()
       val resp = rs.fn()
       rs.headers.forEach { (name, value) -> builder.withHeader(name, EqualToPattern(value)) }
+      if (rs.requestBody != null) {
+         builder.withRequestBody(equalToJson(rs.requestBody))
+      }
       server.stubFor(builder.willReturn(resp.toReturnBuilder()))
    }
 
