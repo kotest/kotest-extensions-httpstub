@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-   api("io.ktor:ktor-http:2.2.2")
+   api("io.ktor:ktor-http:2.2.4")
    implementation(libs.wiremock)
    implementation(libs.kotest.api)
    testImplementation(libs.kotest.runner)
