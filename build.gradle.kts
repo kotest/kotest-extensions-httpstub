@@ -24,7 +24,7 @@ dependencies {
    implementation(libs.kotest.api)
    testImplementation(libs.kotest.runner)
    testImplementation(libs.kotest.assertions)
-   testImplementation("io.ktor:ktor-client-apache:2.2.4")
+   testImplementation("io.ktor:ktor-client-apache:2.3.9")
 }
 
 tasks.test {
